@@ -1,11 +1,15 @@
 pipeline {
     agent any
 
-    stages {
+    tools {
+        jdk 'jdk21'
+        maven 'Maven'
+    }
 
+    stages {
         stage('Checkout') {
             steps {
-                echo 'Source code downloaded from GitHub'
+                checkout scm
             }
         }
 
@@ -14,6 +18,5 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-
     }
 }
