@@ -1,9 +1,41 @@
-stage('Docker Build') {
+pipeline {
+    agent any
 
-    steps {
-
-        sh 'docker build -t java-demo .'
-
+    tools {
+        jdk 'jdk21'
+        maven 'Maven'
     }
 
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=raja.java-demo
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t java-demo .'
+            }
+        }
+
+    }
 }
