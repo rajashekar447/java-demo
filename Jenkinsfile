@@ -2,34 +2,50 @@ pipeline {
     agent any
 
     tools {
+
         jdk 'jdk21'
-        maven 'Maven'
+
     }
 
     stages {
 
         stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
 
-        stage('Check Environment') {
             steps {
-                sh '''
-                    echo "JAVA_HOME=$JAVA_HOME"
-                    java -version
-                    javac -version
-                    mvn -version
-                '''
+
+                checkout scm
+
             }
+
         }
 
         stage('Build') {
+
             steps {
+
                 sh 'mvn clean package'
+
             }
+
+        }
+
+        stage('SonarQube Analysis') {
+
+            steps {
+
+                withSonarQubeEnv('SonarQube') {
+
+                    sh '''
+                    mvn sonar:sonar \
+                    -Dsonar.projectKey=raja.java-demo
+                    '''
+
+                }
+
+            }
+
         }
 
     }
+
 }
