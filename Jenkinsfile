@@ -7,9 +7,21 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Check Environment') {
+            steps {
+                sh '''
+                    echo "JAVA_HOME=$JAVA_HOME"
+                    java -version
+                    javac -version
+                    mvn -version
+                '''
             }
         }
 
@@ -18,5 +30,6 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
+
     }
 }
